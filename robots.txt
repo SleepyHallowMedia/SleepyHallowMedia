@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://woodstocker99.github.io/SleepyHallowMedia/sitemap.xml

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Sleepy Hallow Media — Independent Reporting</title>
+  <!-- Canonical -->
+  <link rel="canonical" href="https://example.com/" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" sizes="any" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css?v=5.1" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sleepy Hallow Media" />
+  <meta property="og:title" content="Sleepy Hallow Media — Independent Reporting" />
+  <meta property="og:description" content="Local reporting, culture, and opinion from the Hollow." />
+  <meta property="og:image" content="assets/social-default.jpg" />
+  <meta property="og:url" content="https://example.com/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sleepy Hallow Media — Independent Reporting" />
+  <meta name="twitter:description" content="Local reporting, culture, and opinion from the Hollow." />
+  <meta name="twitter:image" content="assets/social-default.jpg" />
+
+  <!-- Markdown + Sanitizer (must load before app script) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+
+  <!-- App script -->
+  <script defer src="script.js?v=5.1"></script>
+</head>
+<body>
+  <!-- Skip link -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Top utility / search -->
+  <div class="topbar" aria-label="Site tools">
+    <div class="wrap topbar-row">
+      <div class="topbar-left">
+        <a class="top-link" href="newsletters.html">Latest</a>
+        <a class="top-link" href="newsletters.html?tag=Local">Local</a>
+        <a class="top-link" href="newsletters.html?tag=Opinion">Opinion</a>
+      </div>
+
+      <!-- Universal search -->
+      <form id="site-search" class="top-search" action="newsletters.html" method="get">
+        <label for="q" class="sr-only">Search</label>
+        <input id="q" name="q" type="search" placeholder="Search…" autocomplete="off" />
+        <button class="btn" type="submit" aria-label="Search">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header / Primary Nav -->
+  <header class="site-header" role="banner">
+    <div class="wrap header-row">
+      <a class="brand" href="index.html">
+        <img class="brand-mark" src="assets/logo.png" alt="" />
+        <span class="brand-name">Sleepy Hallow Media</span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a data-nav="home" href="index.html">Home</a>
+        <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
+      </nav>
+
+      <div class="header-tools">
+        <button id="theme-toggle" class="theme-toggle" type="button"
+                aria-label="Toggle dark mode" aria-pressed="false">
+          <span class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+        <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
+      </div>
+    </div>
+
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile navigation">
+      <a data-nav="home" href="index.html">Home</a>
+      <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
+    </nav>
+  </header>
+
+  <!-- Magazine front page -->
+  <main id="main" class="wrap front" tabindex="-1">
+    <!-- Lead + Right rail -->
+    <section class="lead-grid" aria-label="Lead story">
+      <article id="lead-story" class="lead-card" role="article"></article>
+
+      <div class="right-rail" role="list" id="right-rail">
+        <div id="top-stories" class="top-stories"></div>
+      </div>
+    </section>
+
+    <!-- Latest + Sidebar -->
+    <section class="content-grid" aria-label="Latest">
+      <div class="main-col">
+        <h2 class="h-section">Latest</h2>
+        <div id="latest-grid" class="cards-grid" role="list"></div>
+      </div>
+
+      <aside class="side-col">
+        <div class="side-panel">
+          <h3 class="h-side">Latest Headlines</h3>
+          <ul id="sidebar-latest" class="side-list" role="list"></ul>
+        </div>
+
+        <div class="side-panel signup" role="complementary" aria-label="Newsletter signup">
+          <h3 class="h-side">Never miss a premium story</h3>
+          <p>Get the latest in your inbox. No spam.</p>
+          <form onsubmit="return false" aria-disabled="true" title="Wire this later">
+            <button class="btn" href="newsletters.html" >Subscribe</button>
+          </form>
+          <small class="muted">Coming soon</small>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <img class="brand-mark" src="assets/logo.png" alt="" />
+          <span class="brand-name">Sleepy Hallow Media</span>
+        </a>
+        <p class="muted">Independent reporting from the Hollow.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="newsletters.html">Check Out Our Patreon!</a>
+        <img class="Patreon" src="assets/Patreon.png" alt="" width="32" height="16"/>
+
+      </nav>
+      <div class="copy muted">© <span id="year"></span> Sleepy Hallow Media</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
