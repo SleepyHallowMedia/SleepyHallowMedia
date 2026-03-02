@@ -17,7 +17,7 @@
   --bg: #f6f8fc;
   --surface: #ffffff;
   --surface-2: #f2f5f;
-  --ink: #3b6193;
+  --ink: #1b2938;
   --muted: #667792;
   --border: #dfe5ef;
 
@@ -32,7 +32,7 @@
 
   /* Chips */
   --chip-bg: #ffdba8;
-  --chip-ink: #0e1a2a;
+  --chip-ink: #3c6dac;
 
   /* Elevation */
   --radius: 12px;
@@ -76,7 +76,7 @@
 
   /* Header & bars (light) */
   --topbar-bg: #d9ecff;
-  --topbar-ink: #0f2e4b;
+  --topbar-ink: #2b6296;
   --topbar-line: #c9def3;
 
   --header-bg: color-mix(in oklab, #ffffff, #eaf0f7 18%);
