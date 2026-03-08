@@ -312,13 +312,11 @@ function leadCardHTML(item){
   const url = `article.html?article=${encodeURIComponent(file)}`;
   // NOTE: Inline styles on overlay + image ensure clickability and alignment even if CSS isn't loaded yet.
   return `
-    <a class="card-overlay" href="${escapeAttr(url)}" aria-label="${escapeAttr(title)}"
-       style="position:absolute;inset:0;z-index:2;"></a>
-    <img class="lead-bg" src="${escapeAttr(img)}" alt=""
-         style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover;">
+    ${escapeAttr(url)}</a>
+    ${escapeAttr(img)}
     <div class="lead-body">
       ${cat ? `<span class="kicker">${escapeHtml(cat)}</span>` : ''}
-      <h2 class="lead-title"><a href="${escapeAttr(url)}">${escapeHtml(title)}</a></h2>
+      <h2 class="lead-title">${escapeAttr(url)}${escapeHtml(title)}</a></h2>
       <div class="lead-meta">${escapeHtml(date)}${date ? ' • ' : ''}${escapeHtml(author)}</div>
     </div>
   `;
@@ -331,11 +329,11 @@ function topCardHTML(item){
   const author = meta.Author || 'Staff';
   const url = `article.html?article=${encodeURIComponent(file)}`;
   return `
-    <a class="top-thumb-link" href="${escapeAttr(url)}" aria-label="${escapeAttr(title)}">
-      <img class="top-thumb" src="${escapeAttr(img)}" alt="">
+    ${escapeAttr(url)}
+      ${escapeAttr(img)}
     </a>
     <div class="top-body">
-      <h3 class="top-title"><a href="${escapeAttr(url)}">${escapeHtml(title)}</a></h3>
+      <h3 class="top-title">${escapeAttr(url)}${escapeHtml(title)}</a></h3>
       <div class="top-meta">${escapeHtml(date)}${date ? ' • ' : ''}${escapeHtml(author)}</div>
     </div>
   `;
@@ -356,7 +354,7 @@ function gridCard(item){
   a.setAttribute('aria-label', title);
   a.setAttribute('role','listitem');
   a.innerHTML = `
-    <img class="card-img" src="${escapeAttr(img)}" alt="">
+    ${escapeAttr(img)}
     <div class="card-body">
       ${chip}${tags}
       <h3 class="card-title">${escapeHtml(title)}</h3>
@@ -438,7 +436,7 @@ async function renderHome(){
       li.setAttribute('role','listitem');
       const date=formatDate(item.meta.Date);
       const url = `article.html?article=${encodeURIComponent(item.file)}`;
-      li.innerHTML = `<a href="${escapeAttr(url)}">${escapeHtml(item.meta.Title || item.file)}</a>
+      li.innerHTML = `${escapeAttr(url)}${escapeHtml(item.meta.Title || item.file)}</a>
       <div class="muted" style="font-size:.85rem">${escapeHtml(date)}</div>`;
       sList.appendChild(li);
     }
@@ -456,7 +454,7 @@ async function renderHome(){
     }
     const topTags=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6);
     trend.innerHTML = topTags.length
-      ? topTags.map(([k])=>`<a href="newsletters.html?tag=${encodeURIComponent(k)}">${escapeHtml(k)}</a>`).join('')
+      ? topTags.map(([k])=>`newsletters.html?tag=${encodeURIComponent(k)}${escapeHtml(k)}</a>`).join('')
       : `<span class="muted">No trending tags yet</span>`;
   }
 
@@ -483,7 +481,7 @@ async function renderListPage(){
   const chipWrap=document.getElementById('category-chips');
   if(chipWrap){
     const cats=[...new Set(data.map(i=>(i.meta.Category||'').trim()).filter(Boolean))].sort();
-    chipWrap.innerHTML=cats.map(c=>`<a href="newsletters.html?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a>`).join('');
+    chipWrap.innerHTML=cats.map(c=>`newsletters.html?category=${encodeURIComponent(c)}${escapeHtml(c)}</a>`).join('');
   }
 
   const tagWrap=document.getElementById('tag-cloud');
@@ -503,7 +501,7 @@ async function renderListPage(){
           const current=parseTagsParam(url.searchParams.get('tag')||'').map(x=>x.toLowerCase());
           const next=isOn?current.filter(x=>x!==t.toLowerCase()):[...new Set([...current,t.toLowerCase()])];
           if(next.length) url.searchParams.set('tag', next.join(',')); else url.searchParams.delete('tag');
-          return `<a href="${escapeAttr(url.pathname + url.search)}">${escapeHtml(t)}</a>`;
+          return `${escapeAttr(url.pathname + url.search)}${escapeHtml(t)}</a>`;
         }).join('')
       : '<span class="muted">No tags yet</span>';
   }
@@ -636,7 +634,7 @@ function renderArticle(container, filename, meta, body){
   if(tags.length && bylineWrap){
     const tagDiv=document.createElement('div');
     tagDiv.className='a-tags';
-    tagDiv.innerHTML = tags.map(t=>`<a href="newsletters.html?tag=${encodeURIComponent(t)}">${escapeHtml(t)}</a>`).join('');
+    tagDiv.innerHTML = tags.map(t=>`newsletters.html?tag=${encodeURIComponent(t)}${escapeHtml(t)}</a>`).join('');
     bylineWrap.appendChild(tagDiv);
   }
 
