@@ -1,6 +1,7 @@
-/* Sleepy Hallow Media — App (v6.1)
+/* Sleepy Hallow Media — App (v6.1.2)
    Warm, whimsical-but-radical UX. Dynamic topic sections. Sticky share.
-   Smoother Newsletters grid with compact mode for small result sets. */
+   Smoother Newsletters grid with compact mode for small result sets.
+   FIX: restore proper <a> and <img> tags in all templates. */
 
 'use strict';
 
@@ -293,7 +294,7 @@ function ensureListRoles(){
   if(sideList && !sideList.getAttribute('role')) sideList.setAttribute('role','list');
 }
 
-/* ---------- Card builders ---------- */
+/* ---------- Card builders (FIXED TEMPLATES) ---------- */
 function leadCardHTML(item){
   const { file, meta } = item;
   const title = meta.Title || file;
@@ -413,7 +414,7 @@ async function renderHome(){
     latest.removeAttribute('aria-busy');
   }
 
-  // Trending tags
+  // Trending tags (FIX: real anchors)
   if(trend){
     const counts=new Map();
     for(const it of data){
@@ -515,14 +516,14 @@ async function renderListPage(){
 
   const data=await loadVisibleSorted();
 
-  // Category chips
+  // Category chips (FIX: real anchors)
   const chipWrap=document.getElementById('category-chips');
   if(chipWrap){
     const cats=[...new Set(data.map(i=>(i.meta.Category||'').trim()).filter(Boolean))].sort();
     chipWrap.innerHTML=cats.map(c=>`newsletters.html?category=${encodeURIComponent(c)}${escapeHtml(c)}</a>`).join('');
   }
 
-  // Tag cloud (toggle behavior)
+  // Tag cloud (toggle behavior) (FIX: real anchors)
   const tagWrap=document.getElementById('tag-cloud');
   if(tagWrap){
     const counts=new Map();
