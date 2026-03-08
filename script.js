@@ -1,20 +1,26 @@
-/* Sleepy Hallow Media — Magazine Script (v5.1)
- - Theme (light/dark)
- - Homepage: lead + top stories + latest + sidebar + trending tags
- - List page: search + category chips + tag filtering
- - Article view: hero from Thumbnail + reading time + share links
- - Perf: hover/viewport prefetch + sessionStorage warm cache + image hints
- - OG/Twitter (client-side for non-crawlers) with sane fallbacks
- - A11y: loading states (aria-busy), roles, and safe defaults
- - Canonical link injection on article pages
-*/
+/* Sleepy Hallow Media — App (v6.0)
+   Warm, whimsical-but-radical UX. Dynamic topic sections. Sticky share.
+   Keeps content pipeline (newsletters/*.txt via index.json). */
+
 'use strict';
+
 /* ---------- Config ---------- */
 const MANIFEST = 'newsletters/index.json';
 const NEWS_DIR = 'newsletters/';
 const DEFAULT_THUMB = 'thumbnails/placeholder.png';
 const HOMEPAGE_LATEST_LIMIT = 12;
 const SIDEBAR_LATEST_LIMIT = 8;
+
+/* Topic library (rotates). Use tags you actually publish with. */
+const FEATURED_TOPICS = [
+  { tag: 'Politics',  head: 'Interested in politics?',  sub: 'Here are stories that will feed that hunger!' },
+  { tag: 'Local',     head: 'What’s happening nearby?', sub: 'Local stories, close to home.' },
+  { tag: 'Opinion',   head: 'Want strong takes?',       sub: 'Opinion pieces you might like.' },
+  { tag: 'Culture',   head: 'Craving culture?',         sub: 'Arts, media, and more.' },
+  { tag: 'Business',  head: 'Market mind on?',          sub: 'Business and the bottom line.' },
+  { tag: 'Tech',      head: 'Feeling curious about tech?', sub: 'Gadgets, policy, and the future.' },
+];
+
 /* ---------- Theme ---------- */
 const THEME_COOKIE = 'theme';
 function getCookie(name){
@@ -41,7 +47,6 @@ function applyTheme(theme){
   if(btn){
     btn.setAttribute('aria-pressed', theme==='dark'?'true':'false');
     const icon=btn.querySelector('.theme-icon');
-    // Moon when light (can switch to dark), Sun when dark (can switch to light)
     if(icon) icon.textContent = theme==='dark' ? '☀️' : '🌙';
     btn.setAttribute('aria-label', theme==='dark'?'Switch to light mode':'Switch to dark mode');
   }
@@ -63,6 +68,7 @@ function initTheme(){
     mq.addEventListener?.('change',e=>applyTheme(e.matches?'dark':'light'));
   }
 }
+
 /* ---------- Utils ---------- */
 function escapeHtml(str){
   if(str==null) return '';
@@ -126,10 +132,7 @@ function formatDate(dateStr){
 function resolveThumbPath(t){
   if(!t) return DEFAULT_THUMB;
   const s=String(t).trim();
-  if(/^(https?:)?\/\//i.test(s)) return s;
-  if(s.startsWith('/')) return s;
-  if(s.startsWith('thumbnails/')||s.startsWith('newsletters/')) return s;
-  // Allow plain filename under thumbnails/
+  if(/^(https?:)?\/\//i.test(s) || s.startsWith('/') || s.startsWith('thumbnails/') || s.startsWith('newsletters/')) return s;
   return `thumbnails/${s}`;
 }
 function isTruthy(v){
@@ -149,6 +152,7 @@ function renderMarkdownSafe(text){
   }
   return String(text??'').split(/\n\s*\n/).map(p=>`<p>${escapeHtml(p.trim())}</p>`).join('');
 }
+
 /* ---------- Nav / header ---------- */
 function markCurrentNav(){
   const file=(location.pathname.split('/').pop() || 'index.html').toLowerCase();
@@ -176,6 +180,7 @@ function hijackHeaderSearch(){
     }
   });
 }
+
 /* ---------- Data helpers ---------- */
 async function loadVisibleSorted(){
   const manifest=await loadManifest();
@@ -202,6 +207,7 @@ async function loadVisibleSorted(){
   });
   return visible;
 }
+
 /* ---------- Search ranking ---------- */
 function normalize(str){ return String(str??'').toLowerCase(); }
 function itemScore(item,q){
@@ -223,7 +229,8 @@ function searchItems(items,query){
     .sort((a,b)=> b.s - a.s || (b.it.meta._dateObj - a.it.meta._dateObj));
   return ranked.map(x=>x.it);
 }
-/* ---------- Prefetch (hover/viewport) + warm cache ---------- */
+
+/* ---------- Prefetch + warm cache ---------- */
 const PREFETCH_KEY_PREFIX='pre:';
 function getPrefetchKey(file){ return PREFETCH_KEY_PREFIX + file; }
 async function primeArticle(file){
@@ -260,6 +267,7 @@ function hookHoverPrefetch(){
   },{rootMargin:'300px 0px'});
   document.querySelectorAll('a[href*="article.html?"]').forEach(a=>io.observe(a));
 }
+
 /* ---------- Image hints ---------- */
 function enhanceImages(){
   document.querySelectorAll('.top-card img').forEach(img=>{
@@ -272,6 +280,7 @@ function enhanceImages(){
   const hero=document.querySelector('.a-hero-bg');
   if(hero){ hero.decoding='async'; }
 }
+
 /* ---------- A11y helpers ---------- */
 function ensureListRoles(){
   const top = document.getElementById('top-stories');
@@ -283,8 +292,8 @@ function ensureListRoles(){
   if(right && !right.getAttribute('role')) right.setAttribute('role','list');
   if(sideList && !sideList.getAttribute('role')) sideList.setAttribute('role','list');
 }
+
 /* ---------- Card builders ---------- */
-/* Featured/Lead: we render INNER HTML only; the outer element (#lead-story) already has class="lead-card". */
 function leadCardHTML(item){
   const { file, meta } = item;
   const title = meta.Title || file;
@@ -345,41 +354,45 @@ function gridCard(item){
     </div>`;
   return a;
 }
-/* ---------- Homepage render (with graceful fallback) ---------- */
+
+/* ---------- Homepage render ---------- */
 async function renderHome(){
   const leadEl=document.getElementById('lead-story');
   const topEl=document.getElementById('top-stories');
   const latest=document.getElementById('latest-grid');
   const sList=document.getElementById('sidebar-latest');
   const trend=document.getElementById('trend-topics');
-  // If it's not the homepage, bail early.
+
   if(!leadEl && !topEl && !latest && !sList && !trend) return;
-  // Loading placeholders
+
   if(leadEl){ leadEl.setAttribute('aria-busy','true'); }
   if(latest){ latest.setAttribute('aria-busy','true'); }
-  if(sList){ sList.setAttribute('aria-busy','true'); }
+
   const data=await loadVisibleSorted();
-  // Empty-content fallback
+
+  // Empty state
   if(!data.length){
     if(leadEl){
       leadEl.innerHTML = `
         <div class="lead-body">
           <h2 class="lead-title">No articles yet</h2>
           <div class="lead-meta">Add .txt files to <code>newsletters/</code> and update <code>newsletters/index.json</code>.</div>
-        </div>
-      `;
+        </div>`;
       leadEl.removeAttribute('aria-busy');
     }
     if(topEl){ topEl.innerHTML = `<div class="muted" role="status">No top stories available.</div>`; }
     if(latest){ latest.innerHTML = `<div class="muted" role="status">No latest stories to show.</div>`; latest.removeAttribute('aria-busy'); }
-    if(sList){ sList.innerHTML = ``; sList.removeAttribute('aria-busy'); }
     if(trend){ trend.innerHTML = `<span class="muted">No trending tags yet</span>`; }
     return;
   }
+
+  // Lead
   if(leadEl){
     leadEl.innerHTML = leadCardHTML(data[0]);
     leadEl.removeAttribute('aria-busy');
   }
+
+  // Top rail (next 4)
   if(topEl){
     topEl.innerHTML='';
     for(const item of data.slice(1,5)){
@@ -390,6 +403,8 @@ async function renderHome(){
       topEl.appendChild(card);
     }
   }
+
+  // Latest grid (next 12)
   if(latest){
     latest.innerHTML='';
     for(const item of data.slice(5, 5 + HOMEPAGE_LATEST_LIMIT)){
@@ -397,20 +412,8 @@ async function renderHome(){
     }
     latest.removeAttribute('aria-busy');
   }
-  if(sList){
-    sList.innerHTML='';
-    for(const item of data.slice(5, 5 + SIDEBAR_LATEST_LIMIT)){
-      const li=document.createElement('li');
-      li.setAttribute('role','listitem');
-      const date=formatDate(item.meta.Date);
-      const url = `article.html?article=${encodeURIComponent(item.file)}`;
-      li.innerHTML = `<a href="${escapeAttr(url)}">${escapeHtml(item.meta.Title || item.file)}</a>
-      <div class="muted" style="font-size:.85rem">${escapeHtml(date)}</div>`;
-      sList.appendChild(li);
-    }
-    sList.removeAttribute('aria-busy');
-  }
-  // Trending tags (top 6)
+
+  // Trending tags
   if(trend){
     const counts=new Map();
     for(const it of data){
@@ -424,27 +427,94 @@ async function renderHome(){
       ? topTags.map(([k])=>`<a href="newsletters.html?tag=${encodeURIComponent(k)}">${escapeHtml(k)}</a>`).join('')
       : `<span class="muted">No trending tags yet</span>`;
   }
+
+  // Dynamic topic sections + playful copy
+  renderDynamicSections(data);
+
   enhanceImages();
   ensureListRoles();
   hookHoverPrefetch();
 }
+
+/* ---------- Dynamic sections after About ---------- */
+function seededRand(seed){
+  // simple LCG
+  let x = Math.sin(seed) * 10000;
+  return () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
+}
+function chooseTopics(allItems){
+  // Pick 2–3 topics that actually exist in content, rotate daily
+  // Seed by YYYYMMDD so it feels fresh each day
+  const dayKey = Number(new Date().toISOString().slice(0,10).replace(/-/g,''));
+  const rand = seededRand(dayKey);
+  const present = new Set();
+  for(const it of allItems){ for(const t of (it.meta._tags||[])) present.add(t.toLowerCase()); }
+  const pool = FEATURED_TOPICS.filter(t => present.has(t.tag.toLowerCase()));
+  if(pool.length === 0) return [];
+  // pick count = 2 or 3
+  const count = Math.min(pool.length, (rand() > 0.5 ? 3 : 2));
+  const picked = [];
+  const usedIdx = new Set();
+  while(picked.length < count && usedIdx.size < pool.length){
+    const idx = Math.floor(rand()*pool.length);
+    if(!usedIdx.has(idx)){ usedIdx.add(idx); picked.push(pool[idx]); }
+  }
+  return picked;
+}
+function renderDynamicSections(allItems){
+  const mount = document.getElementById('dynamic-sections');
+  if(!mount) return;
+  mount.innerHTML = '';
+
+  const topics = chooseTopics(allItems);
+  if(!topics.length) return;
+
+  for(const topic of topics){
+    const section = document.createElement('section');
+    section.className = 'topic-row';
+    const headHTML = `
+      <div class="topic-head">
+        <h3 class="h-section">${escapeHtml(topic.head)}</h3>
+        <p class="topic-sub">${escapeHtml(topic.sub)}</p>
+      </div>
+      <div class="cards-grid" role="list"></div>`;
+    section.innerHTML = headHTML;
+
+    // Fill cards by tag (up to 6)
+    const list = section.querySelector('.cards-grid');
+    const matches = allItems.filter(i => (i.meta._tags||[]).map(s=>s.toLowerCase()).includes(topic.tag.toLowerCase())).slice(0,6);
+    if(matches.length){
+      for(const m of matches){
+        list.appendChild(gridCard(m));
+      }
+      mount.appendChild(section);
+    }
+  }
+}
+
 /* ---------- List page ---------- */
 function parseTagsParam(value){ if(!value) return []; return value.split(',').map(s=>s.trim()).filter(Boolean); }
 async function renderListPage(){
   const container=document.getElementById('news-list');
   if(!container) return;
   container.setAttribute('aria-busy','true');
+
   const params=new URLSearchParams(location.search);
   const q=params.get('q')?.trim();
   const activeCat=params.get('category')?.trim();
   const tagParam=params.get('tag')?.trim();
   const activeTags=parseTagsParam(tagParam).map(t=>t.toLowerCase());
+
   const data=await loadVisibleSorted();
+
+  // Category chips
   const chipWrap=document.getElementById('category-chips');
   if(chipWrap){
     const cats=[...new Set(data.map(i=>(i.meta.Category||'').trim()).filter(Boolean))].sort();
     chipWrap.innerHTML=cats.map(c=>`<a href="newsletters.html?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a>`).join('');
   }
+
+  // Tag cloud (toggle behavior)
   const tagWrap=document.getElementById('tag-cloud');
   if(tagWrap){
     const counts=new Map();
@@ -466,6 +536,8 @@ async function renderListPage(){
         }).join('')
       : '<span class="muted">No tags yet</span>';
   }
+
+  // Filtered set
   let filtered=activeCat
     ? data.filter(i=>(i.meta.Category||'').trim().toLowerCase()===activeCat.toLowerCase())
     : data;
@@ -476,6 +548,8 @@ async function renderListPage(){
     });
   }
   if(q) filtered=searchItems(filtered,q);
+
+  // Active filter banner
   const info=document.getElementById('active-filter');
   if(info){
     const parts=[];
@@ -484,6 +558,8 @@ async function renderListPage(){
     if(activeTags.length) parts.push(`Tags: ${escapeHtml(activeTags.join(', '))}`);
     info.textContent = parts.length ? `${filtered.length} result(s) — ${parts.join(' • ')}` : '';
   }
+
+  // Render or empty state
   container.innerHTML='';
   if(!filtered.length){
     container.innerHTML=`<p class="muted">No items found${q?` for “${escapeHtml(q)}”`:''}${activeCat?` in ${escapeHtml(activeCat)}`:''}${activeTags.length?` with tags: ${escapeHtml(activeTags.join(', '))}`:''}.</p>`;
@@ -494,13 +570,14 @@ async function renderListPage(){
     container.appendChild(gridCard(item));
   }
   container.removeAttribute('aria-busy');
+
   enhanceImages();
   ensureListRoles();
   hookHoverPrefetch();
 }
+
 /* ---------- OG/Twitter & Canonical helpers ---------- */
 function applyOpenGraph(meta, file){
-  // Sane fallbacks
   const title = (meta.Title || file || 'Article').trim();
   const desc = (meta.Subtitle || '').trim();
   const img = resolveThumbPath(meta.Thumbnail) || DEFAULT_THUMB;
@@ -519,12 +596,11 @@ function applyOpenGraph(meta, file){
   if (twT && !twT.content) twT.content = title;
   if (twD && !twD.content && desc) twD.content = desc;
   if (twI && (!twI.content || twI.content === '')) twI.content = img;
-  // Canonical link injection if present
+
   const canon = document.getElementById('canonical');
-  if (canon) {
-    try { canon.href = url; } catch {}
-  }
+  if (canon) { try { canon.href = url; } catch {} }
 }
+
 /* ---------- Article page ---------- */
 function readingTimeFromText(text,wpm=200){
   const words=String(text??'').trim().split(/\s+/).filter(Boolean).length;
@@ -536,16 +612,17 @@ function populateArticleHero(meta){
   const subEl=document.getElementById('article-subtitle');
   const metaEl=document.getElementById('article-meta');
   const catEl=document.getElementById('article-category');
+
   const title=meta.Title||'Untitled';
   const date=formatDate(meta.Date);
   const author=meta.Author||'Staff';
   const cat=(meta.Category||'').trim();
+
   if(titleEl) titleEl.textContent=title;
   if(subEl) subEl.textContent = meta.Subtitle||'';
   if(metaEl) metaEl.textContent = `${date}${date?' • ':''}${author}`;
-  if(catEl){
-    if(cat){ catEl.hidden=false; catEl.textContent=cat; } else { catEl.hidden=true; }
-  }
+  if(catEl){ if(cat){ catEl.hidden=false; catEl.textContent=cat; } else { catEl.hidden=true; } }
+
   const img=resolveThumbPath(meta.Thumbnail);
   if(bg){ bg.src=encodeURI(img); bg.loading='eager'; bg.decoding='async'; bg.alt=''; }
 }
@@ -561,23 +638,18 @@ function buildShareLinks(title){
   if(x) x.href =`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
   if(copy){
     copy.addEventListener('click', async ()=>{
-      try{
-        await navigator.clipboard.writeText(url);
-        if(fb){ fb.textContent='Link copied!'; setTimeout(()=>fb.textContent='',1400); }
-      }
-      catch{
-        if(fb){ fb.textContent='Copy failed.'; setTimeout(()=>fb.textContent='',1400); }
-      }
+      try{ await navigator.clipboard.writeText(url); if(fb){ fb.textContent='Link copied!'; setTimeout(()=>fb.textContent='',1400); } }
+      catch{ if(fb){ fb.textContent='Copy failed.'; setTimeout(()=>fb.textContent='',1400); } }
     });
   }
 }
 function renderArticle(container, filename, meta, body){
-  // Hero, OG & canonical, reading time, tags
   populateArticleHero(meta);
   applyOpenGraph(meta, filename);
   const reading=readingTimeFromText(body,200);
   const rt=document.getElementById('article-reading-time');
   if(rt) rt.textContent=` • ${reading}`;
+
   const tags=(meta.Tags?splitTags(meta.Tags):[]);
   const bylineWrap=document.querySelector('.a-hero .a-hero-inner');
   if(tags.length && bylineWrap){
@@ -586,10 +658,12 @@ function renderArticle(container, filename, meta, body){
     tagDiv.innerHTML = tags.map(t=>`<a href="newsletters.html?tag=${encodeURIComponent(t)}">${escapeHtml(t)}</a>`).join('');
     bylineWrap.appendChild(tagDiv);
   }
+
   const bodyHtml=renderMarkdownSafe(body);
   const date=formatDate(meta.Date);
   const author=meta.Author||'Staff';
   const metaLine=`${date}${date?' • ':''}${author}`;
+
   container.innerHTML = `
     ${meta.Subtitle?`<p class="muted" style="margin:.2rem 0 1rem 0">${escapeHtml(meta.Subtitle)}</p>`:''}
     <p class="muted" style="margin:.2rem 0 1rem 0">${escapeHtml(metaLine)} • ${escapeHtml(reading)}</p>
@@ -601,9 +675,10 @@ function renderArticle(container, filename, meta, body){
 async function initArticlePage(){
   const content=document.getElementById('article-content');
   if(!content) return;
-  // Loading on
+
   content.setAttribute('aria-busy','true');
   content.innerHTML = `<p class="muted">Loading article…</p>`;
+
   const params=new URLSearchParams(window.location.search);
   const raw=params.get('article');
   const file=sanitizeFilename(raw);
@@ -612,6 +687,7 @@ async function initArticlePage(){
     content.removeAttribute('aria-busy');
     return;
   }
+
   const warmKey='pre:'+file;
   const warmed=sessionStorage.getItem(warmKey);
   if(warmed){
@@ -622,6 +698,7 @@ async function initArticlePage(){
       return;
     }catch{}
   }
+
   try{
     const parsed=await loadNewsletter(file);
     renderArticle(content, file, parsed.meta, parsed.body);
@@ -632,6 +709,7 @@ async function initArticlePage(){
     content.removeAttribute('aria-busy');
   }
 }
+
 /* ---------- Boot ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
   initTheme();

@@ -46,23 +46,12 @@ function isBoolish(v) {
   if (typeof v === 'string') return /^(true|false|yes|no|0|1)$/i.test(v.trim());
   return v === undefined; // missing is fine
 }
-function looksTxt(name) {
-  return typeof name === 'string' && name.toLowerCase().endsWith('.txt');
-}
+function looksTxt(name) { return typeof name === 'string' && name.toLowerCase().endsWith('.txt'); }
+
 async function loadManifest() {
   const manifestPath = path.join(__dirname, '..', 'newsletters', 'index.json');
-  let raw;
-  try {
-    raw = await fs.readFile(manifestPath, 'utf8');
-  } catch (e) {
-    throw new Error(`Failed to load newsletters/index.json: ${e.message}`);
-  }
-  let arr;
-  try {
-    arr = JSON.parse(raw);
-  } catch (e) {
-    throw new Error(`Invalid JSON in newsletters/index.json: ${e.message}`);
-  }
+  const raw = await fs.readFile(manifestPath, 'utf8');
+  const arr = JSON.parse(raw);
   if (!Array.isArray(arr)) throw new Error('index.json is not an array');
   return arr;
 }
@@ -75,50 +64,31 @@ async function main() {
   let ok = true;
   try {
     const manifest = await loadManifest();
-    if (manifest.length === 0) {
-      console.warn('Warning: manifest is empty');
-    }
+    if (manifest.length === 0) console.warn('Warning: manifest is empty');
+
     for (const entry of manifest) {
-      if (typeof entry !== 'string') {
-        console.error('Manifest contains non-string entry:', entry);
-        ok = false;
-        continue;
-      }
-      if (!looksTxt(entry)) {
-        console.warn(`${entry}: not a .txt file (allowed, but check generator configuration)`);
-      }
+      if (typeof entry !== 'string') { console.error('Manifest contains non-string entry:', entry); ok = false; continue; }
+      if (!looksTxt(entry)) console.warn(`${entry}: not a .txt file (allowed, but check generator configuration)`);
+
       let text;
-      try {
-        const { text: raw } = await readNewsletter(entry);
-        text = raw;
-      } catch (e) {
-        console.error(`Missing or unreadable file listed in manifest: ${entry}`);
-        ok = false;
-        continue;
-      }
+      try { ({ text } = await readNewsletter(entry)); }
+      catch { console.error(`Missing or unreadable file listed in manifest: ${entry}`); ok = false; continue; }
+
       const { meta } = parseFrontmatter(text);
 
-      if (!meta.Title) {
-        console.warn(`${entry}: missing Title in frontmatter`);
-      }
+      if (!meta.Title) console.warn(`${entry}: missing Title in frontmatter`);
       if (meta.Date) {
         const d = validateDateYMD(meta.Date);
-        if (!d.ok) {
-          console.error(`${entry}: Date must be YYYY-MM-DD (got: ${meta.Date})`);
-          ok = false;
-        } else {
+        if (!d.ok) { console.error(`${entry}: Date must be YYYY-MM-DD (got: ${meta.Date})`); ok = false; }
+        else {
           const now = new Date();
           if (d.value.getTime() - now.getTime() > 36 * 60 * 60 * 1000) {
             console.warn(`${entry}: Date appears to be in the future (${meta.Date})`);
           }
         }
       }
-      if (!isBoolish(meta.Hidden)) {
-        console.warn(`${entry}: Hidden should be boolean-ish (true/false/yes/no/0/1)`);
-      }
-      if (!isBoolish(meta.Draft)) {
-        console.warn(`${entry}: Draft should be boolean-ish (true/false/yes/no/0/1)`);
-      }
+      if (!isBoolish(meta.Hidden)) console.warn(`${entry}: Hidden should be boolean-ish (true/false/yes/no/0/1)`);
+      if (!isBoolish(meta.Draft))  console.warn(`${entry}: Draft should be boolean-ish (true/false/yes/no/0/1)`);
     }
   } catch (e) {
     console.error(e.message);

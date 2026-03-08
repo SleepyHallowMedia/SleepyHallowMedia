@@ -1,28 +1,27 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
+  <!-- Ads (optional here, but safe to keep one loader) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9198552366209337" crossorigin="anonymous"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Page not found — Sleepy Hallow Media</title>
-  <meta name="robots" content="noindex,follow">
+  <meta name="robots" content="noindex,follow" />
 
-  <!-- Favicon -->
   <link rel="icon" href="favicon.ico" sizes="any" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6.0" />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="styles.css?v=5.1" />
+  <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script defer src="script.js?v=6.0"></script>
 </head>
 <body>
-  <!-- Skip link -->
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Topbar -->
   <div class="topbar" aria-label="Site tools">
     <div class="wrap topbar-row">
       <div class="topbar-left">
@@ -31,7 +30,6 @@
         <a class="top-link" href="newsletters.html?tag=Opinion">Opinion</a>
       </div>
 
-      <!-- Universal search -->
       <form id="site-search" class="top-search" action="newsletters.html" method="get" role="search">
         <label for="q" class="sr-only">Search the site</label>
         <input id="q" name="q" type="search" placeholder="Search…" autocomplete="off" />
@@ -40,11 +38,10 @@
     </div>
   </div>
 
-  <!-- Header -->
   <header class="site-header" role="banner">
     <div class="wrap header-row">
       <a class="brand" href="index.html">
-        <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="24" height="24" />
+        <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
         <span class="brand-name">Sleepy Hallow Media</span>
       </a>
       <nav class="primary-nav" aria-label="Primary">
@@ -64,7 +61,6 @@
     </nav>
   </header>
 
-  <!-- Main -->
   <main class="wrap" id="main" tabindex="-1" style="padding:40px 0 60px">
     <article class="article-body" role="status" aria-live="polite">
       <h1 class="a-title">We can’t find that page</h1>
@@ -75,7 +71,6 @@
       </p>
       <hr style="border:none;border-top:1px solid var(--border);margin:24px 0">
 
-      <!-- Inline search -->
       <form id="site-search-404" class="top-search" action="newsletters.html" method="get" role="search">
         <label for="q404" class="sr-only">Search the site</label>
         <input id="q404" name="q" type="search" placeholder="Search…" autocomplete="off" />
@@ -84,32 +79,23 @@
     </article>
   </main>
 
-  <!-- Footer -->
   <footer class="site-footer" id="footer">
     <div class="wrap footer-grid">
       <div>
         <a class="brand" href="index.html">
-          <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="24" height="24" />
+          <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
           <span class="brand-name">Sleepy Hallow Media</span>
         </a>
         <p class="muted">Independent reporting from the Hollow.</p>
       </div>
       <nav class="footer-links" aria-label="Footer">
         <a href="newsletters.html">Check Out Our Patreon!</a>
-        <img class="Patreon" src="assets/Patreon.png" alt="Patreon" width="32" height="16"/>
+        <img class="Patreon" src="assets/Patreon.png" alt="Support us on Patreon" width="32" height="16" />
       </nav>
       <div class="copy muted">© <span id="year"></span> Sleepy Hallow Media</div>
     </div>
   </footer>
 
-  <script>
-    // Year + reuse theme/search behavior from app script
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-
-  <!-- If you want header/theme/search behavior on this page too, include app script: -->
-  <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-  <script defer src="script.js?v=5.1"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
