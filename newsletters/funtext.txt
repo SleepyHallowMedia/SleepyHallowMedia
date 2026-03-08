@@ -2,7 +2,7 @@
 Title: Lorem Ipsum
 Author: Lorem D. Ipsum
 Subtitle: lorem Ipsum
-Thumbnail: thumbnails/example.jpg
+Thumbnail: example.jpg
 Tags: Politics
 Date: 2026-01-20
 ---

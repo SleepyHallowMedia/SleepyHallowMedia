@@ -2,7 +2,7 @@
 Title: My New and Better Headline
 Subtitle: A Not So short subtitle explainging this article and its thoughts and reasonings
 Author: Jane Good Reporter
-Thumbnail: thumbnails/Untitled.jpg
+Thumbnail: Untitled.jpg
 Date: 2026-01-20
 Tags: Local
 ---
