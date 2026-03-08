@@ -3,32 +3,36 @@
 <head>
   <!-- Ads (load once per page) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9198552366209337" crossorigin="anonymous"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Sleepy Hallow Media — Independent Reporting</title>
   <meta name="description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
+
   <!-- Canonical & Open Graph -->
-  <link rel="canonical" href="https://woodstocker99.github.io/SleepyHallowMedia/" />
+  <link rel="canonical" href="https://sleepyhallowmedia.github.io/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Sleepy Hallow Media" />
   <meta property="og:title" content="Sleepy Hallow Media — Independent Reporting" />
   <meta property="og:description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
   <meta property="og:image" content="assets/social-default.jpg" />
-  <meta property="og:url" content="https://woodstocker99.github.io/SleepyHallowMedia/" />
+  <meta property="og:url" content="https://sleepyhallowmedia.github.io/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Sleepy Hallow Media — Independent Reporting" />
   <meta name="twitter:description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
   <meta name="twitter:image" content="assets/social-default.jpg" />
+
   <!-- Icons & Fonts -->
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
   <!-- Styles & App -->
-  <link rel="stylesheet" href="styles.css?v=6.2" />
+  <link rel="stylesheet" href="styles.css?v=6.8.1" />
   <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-  <script defer src="script.js?v=6.2"></script>
+  <script defer src="script.js?v=6.8"></script>
 </head>
 <body>
   <!-- Skip link -->
@@ -42,6 +46,7 @@
         <a class="top-link" href="newsletters.html?tag=Local">Local</a>
         <a class="top-link" href="newsletters.html?tag=Opinion">Opinion</a>
       </div>
+
       <!-- Universal search -->
       <form id="site-search" class="top-search" action="newsletters.html" method="get" role="search">
         <label for="q" class="sr-only">Search the site</label>
@@ -99,12 +104,16 @@
 
     <!-- Latest + sidebar -->
     <section class="content-grid" aria-label="Latest and signup">
+      <!-- Latest grid (populated by script.js) -->
       <div id="latest-grid" class="cards-grid" role="list" aria-busy="true"></div>
-      <aside class="side-panel signup" aria-label="Newsletter signup">
+
+      <!-- Sidebar: subscription + latest list -->
+      <aside class="side-panel" aria-label="Newsletter signup & recent">
         <h3 class="h-side">Never miss a premium story</h3>
         <p>Get the latest in your inbox. No spam.</p>
         <a class="btn" href="newsletters.html">Subscribe</a>
-        <h3 class="h-side" style="margin-top:12px">Recent</h3>
+        <div class="section-divider" aria-hidden="true"></div>
+        <h3 class="h-side" style="margin-top:8px">Recent</h3>
         <ul id="sidebar-latest" class="side-list" role="list" aria-busy="true"></ul>
       </aside>
     </section>
@@ -122,9 +131,7 @@
       </p>
     </section>
 
-    <div class="section-divider" aria-hidden="true"></div>
-
-    <!-- Dynamic topic sections (optional; populated by script) -->
+    <!-- Handpicked / dynamic sections (optional) -->
     <section id="dynamic-sections" class="dynamic-sections" aria-label="Handpicked for you"></section>
   </main>
 
