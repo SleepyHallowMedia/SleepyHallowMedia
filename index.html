@@ -1,15 +1,12 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
-  <!-- Ads: load once per page -->
+  <!-- Ads (load once per page) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9198552366209337" crossorigin="anonymous"></script>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
   <title>Sleepy Hallow Media — Independent Reporting</title>
   <meta name="description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
-
   <!-- Canonical & Open Graph -->
   <link rel="canonical" href="https://woodstocker99.github.io/SleepyHallowMedia/" />
   <meta property="og:type" content="website" />
@@ -22,18 +19,16 @@
   <meta name="twitter:title" content="Sleepy Hallow Media — Independent Reporting" />
   <meta name="twitter:description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
   <meta name="twitter:image" content="assets/social-default.jpg" />
-
   <!-- Icons & Fonts -->
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <!-- Styles & App -->
-  <link rel="stylesheet" href="styles.css?v=7.0" />
+  <link rel="stylesheet" href="styles.css?v=6.2" />
   <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-  <script defer src="script.js?v=7.0"></script>
+  <script defer src="script.js?v=6.2"></script>
 </head>
 <body>
   <!-- Skip link -->
@@ -47,7 +42,6 @@
         <a class="top-link" href="newsletters.html?tag=Local">Local</a>
         <a class="top-link" href="newsletters.html?tag=Opinion">Opinion</a>
       </div>
-
       <!-- Universal search -->
       <form id="site-search" class="top-search" action="newsletters.html" method="get" role="search">
         <label for="q" class="sr-only">Search the site</label>
@@ -64,12 +58,10 @@
         <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
         <span class="brand-name">Sleepy Hallow Media</span>
       </a>
-
       <nav class="primary-nav" aria-label="Primary navigation">
         <a data-nav="home" href="index.html">Home</a>
         <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
       </nav>
-
       <div class="header-tools">
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
           <span class="theme-icon" aria-hidden="true">🌙</span>
@@ -77,7 +69,6 @@
         <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
       </div>
     </div>
-
     <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile navigation">
       <a data-nav="home" href="index.html">Home</a>
       <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
@@ -99,25 +90,21 @@
     <!-- Lead + Right rail -->
     <section class="lead-grid" aria-label="Lead story">
       <article id="lead-story" class="lead-card" role="article" aria-busy="true"></article>
-
       <div class="right-rail" role="list" id="right-rail">
-        <div id="top-stories" class="top-stories" role="list"></div>
+        <div id="top-stories" class="top-stories"></div>
       </div>
     </section>
 
+    <div class="section-divider" aria-hidden="true"></div>
+
     <!-- Latest + sidebar -->
     <section class="content-grid" aria-label="Latest and signup">
-      <div>
-        <div id="latest-grid" class="cards-grid" role="list" aria-busy="true"></div>
-      </div>
-
+      <div id="latest-grid" class="cards-grid" role="list" aria-busy="true"></div>
       <aside class="side-panel signup" aria-label="Newsletter signup">
         <h3 class="h-side">Never miss a premium story</h3>
         <p>Get the latest in your inbox. No spam.</p>
         <a class="btn" href="newsletters.html">Subscribe</a>
-
-        <div class="section-divider" aria-hidden="true"></div>
-
+        <h3 class="h-side" style="margin-top:12px">Recent</h3>
         <ul id="sidebar-latest" class="side-list" role="list" aria-busy="true"></ul>
       </aside>
     </section>
@@ -130,12 +117,14 @@
         we chase clarity, context, and a bit of wonder.
       </p>
       <p class="about-detail">
-        We publish local reporting, politics, culture, and opinion. We keep pages fast,
-        readable, and accessible. We also like a little mischief.
+        We publish local reporting, politics, culture, and opinion. We keep pages fast, readable,
+        and accessible. We also like a little mischief.
       </p>
     </section>
 
-    <!-- Dynamic topic sections (optional, populated by script) -->
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <!-- Dynamic topic sections (optional; populated by script) -->
     <section id="dynamic-sections" class="dynamic-sections" aria-label="Handpicked for you"></section>
   </main>
 
@@ -149,16 +138,13 @@
         </a>
         <p class="muted">Independent reporting from the Hollow.</p>
       </div>
-
       <nav class="footer-links" aria-label="Footer">
         <a href="newsletters.html">Check Out Our Patreon!</a>
         <img class="Patreon" src="assets/Patreon.png" alt="Support us on Patreon" width="32" height="16" />
       </nav>
-
       <div class="copy muted">© <span id="year"></span> Sleepy Hallow Media</div>
     </div>
   </footer>
-
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

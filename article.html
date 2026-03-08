@@ -3,19 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
   <title>Sleepy Hallow Media — Article</title>
-
   <!-- Canonical filled at runtime -->
   <link id="canonical" rel="canonical" href="">
-
   <!-- Icons & Fonts -->
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7.0" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6.2" />
   <!-- OG/Twitter defaults (script overwrites) -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Sleepy Hallow Media" />
@@ -27,47 +23,12 @@
   <meta name="twitter:title" id="tw-title" content="Sleepy Hallow Media — Article" />
   <meta name="twitter:description" id="tw-description" content="" />
   <meta name="twitter:image" id="tw-image" content="assets/social-default.jpg" />
-
-  <!-- Libraries & App -->
   <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-  <script defer src="script.js?v=7.0"></script>
-
+  <script defer src="script.js?v=6.2"></script>
   <!-- AdSense loader (once) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9198552366209337" crossorigin="anonymous"></script>
-
-  <!-- Fixed ad rails alignment helper -->
-  <style>
-    :root{
-      --article-content-width: 740px;
-      --rail-width: 120px;
-      --rail-gap: 24px;
-      --rails-top: 120px;
-      --rails-min-viewport: 1280px;
-      --z-rails: 10;
-    }
-    .ad-rail-fixed{ position: fixed; top: var(--rails-top); width: var(--rail-width); z-index: var(--z-rails); display: none; }
-    @media (min-width: var(--rails-min-viewport)){
-      .ad-rail-fixed{ display:block; }
-      .ad-rail-left{ left: calc(50% - (var(--article-content-width) / 2) - var(--rail-gap) - var(--rail-width)); }
-      .ad-rail-right{ left: calc(50% + (var(--article-content-width) / 2) + var(--rail-gap)); }
-    }
-    .article-body { max-width: 740px; margin: 0 auto; width: 100%; }
-  </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const el = document.querySelector('.article-body');
-      if (!el) return;
-      const setArticleWidth = () => {
-        const w = Math.round(el.getBoundingClientRect().width);
-        if (w > 0) document.documentElement.style.setProperty('--article-content-width', w + 'px');
-      };
-      setArticleWidth();
-      let raf = null;
-      const onResize = () => { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(setArticleWidth); };
-      window.addEventListener('resize', onResize);
-    });
-  </script>
+  <!-- Fixed ad rails alignment helper is in styles.css (root vars) -->
 </head>
 <body data-page="article">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -93,12 +54,10 @@
         <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
         <span class="brand-name">Sleepy Hallow Media</span>
       </a>
-
       <nav class="primary-nav" aria-label="Primary">
         <a data-nav="home" href="index.html">Home</a>
         <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
       </nav>
-
       <div class="header-tools">
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
           <span class="theme-icon" aria-hidden="true">🌙</span>
@@ -106,7 +65,6 @@
         <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
       </div>
     </div>
-
     <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile">
       <a data-nav="home" href="index.html">Home</a>
       <a data-nav="newsletters" href="newsletters.html">Newsletters</a>
@@ -134,7 +92,6 @@
            data-ad-client="ca-pub-9198552366209337" data-ad-slot="7504472229"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </aside>
-
     <aside class="ad-rail-fixed ad-rail-right" aria-label="Advertisement right">
       <ins class="adsbygoogle" style="display:inline-block;width:120px;height:728px"
            data-ad-client="ca-pub-9198552366209337" data-ad-slot="7504472229"></ins>
@@ -165,16 +122,13 @@
         </a>
         <p class="muted">Independent reporting from the Hollow.</p>
       </div>
-
       <nav class="footer-links" aria-label="Footer">
         <a href="newsletters.html">Check Out Our Patreon!</a>
         <img class="Patreon" src="assets/Patreon.png" alt="Support us on Patreon" width="32" height="16" />
       </nav>
-
       <div class="copy muted">© <span id="year"></span> Sleepy Hallow Media</div>
     </div>
   </footer>
-
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
