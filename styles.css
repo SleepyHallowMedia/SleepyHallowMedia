@@ -492,3 +492,113 @@ figcaption{ color: var(--muted); font-size:.85rem; margin-top:.25rem; }
   word-break: break-word;
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ===== Lead Story card – minimal, additive patch ===== */
+
+/* The outer lead container is already #lead-story (and in your JS it's treated as a card).
+   These rules make it behave like your other cards without touching markup. */
+#lead-story.lead-card,
+#lead-story {
+  position: relative;                  /* lets the overlay fill the card */
+  display: block;
+  border-radius: 12px;
+  border: 1px solid var(--paper-line, rgba(0,0,0,.12));
+  background: var(--surface, #111);    /* keeps gradient readable if image fails */
+  overflow: hidden;                    /* crops the image cleanly */
+}
+
+/* Full‑card clickable overlay (from your template). */
+#lead-story .card-overlay {
+  position: absolute;
+  inset: 0;                            /* top/right/bottom/left: 0 */
+  z-index: 3;
+  display: block;
+  text-decoration: none;
+}
+
+/* Visible focus outline for keyboard users. */
+#lead-story .card-overlay:focus-visible,
+#lead-story .lead-title a:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--accent, #d97706), white 15%);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* Lead thumbnail alignment: always fills nicely, no stretching. */
+#lead-story .lead-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Content area (title, meta, dek). */
+#lead-story .lead-body {
+  position: relative;
+  z-index: 4;                          /* sits above the image */
+  padding: 16px 18px 18px;
+  color: var(--paper-ink, #eaeaea);
+  /* Gentle top-to-bottom darkening so white text stays readable on bright images */
+  background: linear-gradient(to bottom, rgba(0,0,0,.0), rgba(0,0,0,.25));
+}
+
+/* Category chip/kicker */
+#lead-story .kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: .22rem .55rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: .68rem;
+  color: color-mix(in oklab, var(--accent, #d97706), black 10%);
+  background: color-mix(in oklab, var(--accent, #d97706), white 85%);
+  border: 1px solid color-mix(in oklab, var(--accent, #d97706), white 55%);
+}
+
+/* Headline + link inside. */
+#lead-story .lead-title {
+  margin: .25rem 0 .35rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+#lead-story .lead-title a {
+  color: inherit;
+  text-decoration: none;
+}
+#lead-story .lead-title a:hover {
+  text-decoration: underline;
+  text-underline-offset: .15em;
+}
+
+/* Date/author line. */
+#lead-story .lead-meta {
+  font-size: .9rem;
+  font-weight: 700;
+  opacity: .85;
+}
+
+/* Optional subtitle (dek) if you include it in content). */
+#lead-story .hero-dek,
+#lead-story .lead-dek {
+  margin: .4rem 0 0;
+  color: color-mix(in oklab, var(--paper-ink, #eaeaea), black 35%);
+}
+
+/* Hover state similar to your grid cards (subtle, not flashy). */
+#lead-story:hover {
+  background: color-mix(in oklab, var(--surface, #111), var(--accent, #d97706) 8%);
+}
+
+/* Make top-rail thumbs consistently cropped, matching the new lead behavior. */
+.top-card .top-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+}
