@@ -1,11 +1,10 @@
-/* Sleepy Hallow Media — App (v6.1.9)
+/* Sleepy Hallow Media — App (v6.3.0)
    Warm, whimsical‑but‑radical UX. Dynamic topic sections. Sticky share.
    Sleek Newsletters grid with compact mode for small result sets.
 
-   CRITICAL: All templates now output REAL <a> and <img> elements (no raw URL text),
-   which also eliminates the “stray article” block on the homepage.
+   CRITICAL: All templates below output REAL <a> and <img> elements (no raw URL text),
+   which removes the stray text block on the homepage.
 */
-
 'use strict';
 
 /* ---------- Config ---------- */
@@ -17,11 +16,11 @@ const SIDEBAR_LATEST_LIMIT = 8;
 
 /* Topic library (rotates). Use tags you actually publish with. */
 const FEATURED_TOPICS = [
-  { tag: 'Politics',  head: 'Interested in politics?',  sub: 'Here are stories that will feed that hunger!' },
-  { tag: 'Local',     head: 'What’s happening nearby?', sub: 'Local stories, close to home.' },
-  { tag: 'Opinion',   head: 'Want strong takes?',       sub: 'Opinion pieces you might like.' },
-  { tag: 'Culture',   head: 'Craving culture?',         sub: 'Arts, media, and more.' },
-  { tag: 'Business',  head: 'Market mind on?',          sub: 'Business and the bottom line.' },
+  { tag: 'Politics',  head: 'Interested in politics?',     sub: 'Here are stories that will feed that hunger!' },
+  { tag: 'Local',     head: 'What’s happening nearby?',    sub: 'Local stories, close to home.' },
+  { tag: 'Opinion',   head: 'Want strong takes?',          sub: 'Opinion pieces you might like.' },
+  { tag: 'Culture',   head: 'Craving culture?',            sub: 'Arts, media, and more.' },
+  { tag: 'Business',  head: 'Market mind on?',             sub: 'Business and the bottom line.' },
   { tag: 'Tech',      head: 'Feeling curious about tech?', sub: 'Gadgets, policy, and the future.' },
 ];
 
@@ -83,7 +82,9 @@ function escapeHtml(str){
     .replace(/"/g,'&quot;')
     .replace(/'/g,'&#39;');
 }
-function escapeAttr(str){ return escapeHtml(str).replace(/`/g,'`'); }
+/* For attribute values only */
+function escapeAttrVal(str){ return escapeHtml(String(str)); }
+
 function sanitizeFilename(filename){
   if(!filename || typeof filename!=='string') return '';
   let f = filename.replace(/\\/g,'/').trim();
@@ -101,7 +102,7 @@ function parseFrontmatter(text){
     if(line==='---'){ i++; break; }
     if(!line) continue;
     const m=line.match(/^([^:]+)\s*:\s*(.*)$/);
-    if(m) meta[m[1].trim()] = m[2].trim();
+    if(m) meta[m[1].trim()]=m[2].trim();
   }
   const body=lines.slice(i).join('\n').trim();
   return {meta, body};
@@ -298,25 +299,25 @@ function ensureListRoles(){
 }
 
 /* ============================
-   Card builders (REAL TAGS)
+   Card builders — REAL TAGS
    ============================ */
 
 /* Lead/hero card: overlay link + background image + title link */
 function leadCardHTML(item){
   const { file, meta } = item;
-  const title = meta.Title || file;
-  const cat = (meta.Category || '').trim();
-  const date = formatDate(meta.Date);
+  const title  = meta.Title || file;
+  const cat    = (meta.Category || '').trim();
+  const date   = formatDate(meta.Date);
   const author = meta.Author || 'Staff';
-  const img = resolveThumbPath(meta.Thumbnail);
-  const url = `article.html?article=${encodeURIComponent(file)}`;
+  const img    = resolveThumbPath(meta.Thumbnail);
+  const url    = `article.html?article=${encodeURIComponent(file)}`;
 
   return `
-    ${escapeAttr(url)}</a>
-    ${escapeAttr(img)}
+    <a class="card-overlay" href="${escapeAttrVal(url)}" aria-label="${escapeAttrVal(title)}"></a>
+    <img class="lead-bg" src="${escapeAttrVal(img)}" alt="" width="1280" height="720" />
     <div class="lead-body">
       ${cat ? `<span class="kicker">${escapeHtml(cat)}</span>` : ''}
-      <h2 class="lead-title">${escapeAttr(url)}${escapeHtml(title)}</a></h2>
+      <h2 class="lead-title"><a href="${escapeAttrVal(url)}">${escapeHtml(title)}</a></h2>
       <div class="lead-meta">${escapeHtml(date)}${date ? ' • ' : ''}${escapeHtml(author)}</div>
     </div>
   `;
@@ -325,32 +326,34 @@ function leadCardHTML(item){
 /* Right‑rail “top” card (thumb + title) */
 function topCardHTML(item){
   const { file, meta } = item;
-  const title = meta.Title || file;
-  const img = resolveThumbPath(meta.Thumbnail);
-  const date = formatDate(meta.Date);
+  const title  = meta.Title || file;
+  const img    = resolveThumbPath(meta.Thumbnail);
+  const date   = formatDate(meta.Date);
   const author = meta.Author || 'Staff';
-  const url = `article.html?article=${encodeURIComponent(file)}`;
+  const url    = `article.html?article=${encodeURIComponent(file)}`;
 
   return `
-    ${escapeAttr(img)}
+    <a href="${escapeAttrVal(url)}" aria-label="${escapeAttrVal(title)}">
+      <img class="top-thumb" src="${escapeAttrVal(img)}" alt="" />
+    </a>
     <div class="top-body">
-      <h3 class="top-title">${escapeAttr(url)}${escapeHtml(title)}</a></h3>
+      <h3 class="top-title"><a href="${escapeAttrVal(url)}">${escapeHtml(title)}</a></h3>
       <div class="top-meta">${escapeHtml(date)}${date ? ' • ' : ''}${escapeHtml(author)}</div>
     </div>
   `;
 }
 
-/* Grid card used in Latest and topic sections (entire card is a link) */
+/* Grid card used in Latest and dynamic topic sections (entire card is a link) */
 function gridCard(item){
   const { file, meta } = item;
-  const img = resolveThumbPath(meta.Thumbnail);
-  const title = meta.Title || file;
-  const date = formatDate(meta.Date);
+  const img    = resolveThumbPath(meta.Thumbnail);
+  const title  = meta.Title || file;
+  const date   = formatDate(meta.Date);
   const author = meta.Author || 'Staff';
-  const chip = meta.Category ? `<span class="chip" title="Category">${escapeHtml(meta.Category)}</span>` : '';
-  const tags = (meta._tags || []).slice(0, 2).map(t => `<span class="chip" title="Tag">${escapeHtml(t)}</span>`).join('');
-  const sub = meta.Subtitle ? `<p class="card-sub">${escapeHtml(meta.Subtitle)}</p>` : '';
-  const url = `article.html?article=${encodeURIComponent(file)}`;
+  const chip   = meta.Category ? `<span class="chip" title="Category">${escapeHtml(meta.Category)}</span>` : '';
+  const tags   = (meta._tags || []).slice(0, 2).map(t => `<span class="chip" title="Tag">${escapeHtml(t)}</span>`).join('');
+  const sub    = meta.Subtitle ? `<p class="card-sub">${escapeHtml(meta.Subtitle)}</p>` : '';
+  const url    = `article.html?article=${encodeURIComponent(file)}`;
 
   const a = document.createElement('a');
   a.className = 'card';
@@ -358,7 +361,7 @@ function gridCard(item){
   a.setAttribute('aria-label', title);
   a.setAttribute('role','listitem');
   a.innerHTML = `
-    ${escapeAttr(img)}
+    <img class="card-img" src="${escapeAttrVal(img)}" alt="" />
     <div class="card-body">
       ${chip}${tags}
       <h3 class="card-title">${escapeHtml(title)}</h3>
@@ -378,10 +381,10 @@ async function renderHome(){
 
   if(!leadEl && !topEl && !latest && !sList && !trend) return;
 
-  if(leadEl){ leadEl.setAttribute('aria-busy','true'); }
-  if(latest){ latest.setAttribute('aria-busy','true'); }
+  if(leadEl)  leadEl.setAttribute('aria-busy','true');
+  if(latest)  latest.setAttribute('aria-busy','true');
 
-  const data=await loadVisibleSorted();
+  const data = await loadVisibleSorted();
 
   // Empty state
   if(!data.length){
@@ -393,9 +396,9 @@ async function renderHome(){
         </div>`;
       leadEl.removeAttribute('aria-busy');
     }
-    if(topEl){ topEl.innerHTML = `<div class="muted" role="status">No top stories available.</div>`; }
-    if(latest){ latest.innerHTML = `<div class="muted" role="status">No latest stories to show.</div>`; latest.removeAttribute('aria-busy'); }
-    if(trend){ trend.innerHTML = `<span class="muted">No trending tags yet</span>`; }
+    if(topEl)   topEl.innerHTML   = `<div class="muted" role="status">No top stories available.</div>`;
+    if(latest){ latest.innerHTML  = `<div class="muted" role="status">No latest stories to show.</div>`; latest.removeAttribute('aria-busy'); }
+    if(trend)   trend.innerHTML   = `<span class="muted">No trending tags yet</span>`;
     return;
   }
 
@@ -407,19 +410,19 @@ async function renderHome(){
 
   // Top rail (next 4)
   if(topEl){
-    topEl.innerHTML='';
+    topEl.innerHTML = '';
     for(const item of data.slice(1,5)){
-      const card=document.createElement('article');
-      card.className='top-card';
+      const card = document.createElement('article');
+      card.className = 'top-card';
       card.setAttribute('role','listitem');
-      card.innerHTML=topCardHTML(item);
+      card.innerHTML = topCardHTML(item);
       topEl.appendChild(card);
     }
   }
 
   // Latest grid (next 12)
   if(latest){
-    latest.innerHTML='';
+    latest.innerHTML = '';
     for(const item of data.slice(5, 5 + HOMEPAGE_LATEST_LIMIT)){
       latest.appendChild(gridCard(item));
     }
@@ -428,14 +431,14 @@ async function renderHome(){
 
   // Sidebar latest list
   if(sList){
-    sList.innerHTML='';
+    sList.innerHTML = '';
     for(const item of data.slice(5, 5 + SIDEBAR_LATEST_LIMIT)){
-      const li=document.createElement('li');
+      const li   = document.createElement('li');
       li.setAttribute('role','listitem');
-      const date=formatDate(item.meta.Date);
-      const url = `article.html?article=${encodeURIComponent(item.file)}`;
-      const title = item.meta.Title || item.file;
-      li.innerHTML = `${escapeAttr(url)}${escapeHtml(title)}</a>
+      const date = formatDate(item.meta.Date);
+      const url  = `article.html?article=${encodeURIComponent(item.file)}`;
+      const title= item.meta.Title || item.file;
+      li.innerHTML = `<a href="${escapeAttrVal(url)}">${escapeHtml(title)}</a>
       <div class="muted" style="font-size:.85rem">${escapeHtml(date)}</div>`;
       sList.appendChild(li);
     }
@@ -453,7 +456,7 @@ async function renderHome(){
     }
     const topTags=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6);
     trend.innerHTML = topTags.length
-      ? topTags.map(([k])=>`newsletters.html?tag=${encodeURIComponent(k)}${escapeHtml(k)}</a>`).join('')
+      ? topTags.map(([k]) => `<a href="newsletters.html?tag=${encodeURIComponent(k)}">${escapeHtml(k)}</a>`).join('')
       : `<span class="muted">No trending tags yet</span>`;
   }
 
@@ -467,12 +470,10 @@ async function renderHome(){
 
 /* ---------- Dynamic sections after About ---------- */
 function seededRand(seed){
-  // simple LCG-ish
   let x = Math.sin(seed) * 10000;
   return () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
 }
 function chooseTopics(allItems){
-  // Pick 2–3 topics that actually exist in content, rotate daily
   const dayKey = Number(new Date().toISOString().slice(0,10).replace(/-/g,''));
   const rand = seededRand(dayKey);
   const present = new Set();
@@ -499,37 +500,28 @@ function renderDynamicSections(allItems){
   for(const topic of topics){
     const section = document.createElement('section');
     section.className = 'topic-row';
-    const headHTML = `
+    section.innerHTML = `
       <div class="topic-head">
         <h3 class="h-section">${escapeHtml(topic.head)}</h3>
         <p class="topic-sub">${escapeHtml(topic.sub)}</p>
       </div>
       <div class="cards-grid" role="list"></div>`;
-    section.innerHTML = headHTML;
-
-    // Fill cards by tag (up to 6)
     const list = section.querySelector('.cards-grid');
-    const matches = allItems.filter(i => (i.meta._tags||[]).map(s=>s.toLowerCase()).includes(topic.tag.toLowerCase())).slice(0,6);
+    const matches = allItems
+      .filter(i => (i.meta._tags||[]).map(s=>s.toLowerCase()).includes(topic.tag.toLowerCase()))
+      .slice(0,6);
     if(matches.length){
-      for(const m of matches){
-        list.appendChild(gridCard(m));
-      }
+      for(const m of matches){ list.appendChild(gridCard(m)); }
       mount.appendChild(section);
     }
   }
 }
 
 /* ---------- Newsletters list page ---------- */
-
-/* Compact mode toggler: keep small result sets from stretching cards */
 function setCompactGrid(container, itemCount){
-  if(itemCount <= 3){
-    container.classList.add('is-compact');
-  }else{
-    container.classList.remove('is-compact');
-  }
+  if(itemCount <= 3){ container.classList.add('is-compact'); }
+  else { container.classList.remove('is-compact'); }
 }
-
 function parseTagsParam(value){ if(!value) return []; return value.split(',').map(s=>s.trim()).filter(Boolean); }
 async function renderListPage(){
   const container=document.getElementById('news-list');
@@ -548,7 +540,7 @@ async function renderListPage(){
   const chipWrap=document.getElementById('category-chips');
   if(chipWrap){
     const cats=[...new Set(data.map(i=>(i.meta.Category||'').trim()).filter(Boolean))].sort();
-    chipWrap.innerHTML=cats.map(c=>`newsletters.html?category=${encodeURIComponent(c)}${escapeHtml(c)}</a>`).join('');
+    chipWrap.innerHTML=cats.map(c => `<a href="newsletters.html?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a>`).join('');
   }
 
   // Tag cloud (toggle) — REAL anchors
@@ -569,7 +561,7 @@ async function renderListPage(){
           const current=(url.searchParams.get('tag')||'').split(',').map(s=>s.trim()).filter(Boolean).map(x=>x.toLowerCase());
           const next=isOn?current.filter(x=>x!==t.toLowerCase()):[...new Set([...current,t.toLowerCase()])];
           if(next.length) url.searchParams.set('tag', next.join(',')); else url.searchParams.delete('tag');
-          return `${escapeAttr(url.pathname + url.search)}${escapeHtml(t)}</a>`;
+          return `<a href="${escapeAttrVal(url.pathname + url.search)}">${escapeHtml(t)}</a>`;
         }).join('')
       : '<span class="muted">No tags yet</span>';
   }
@@ -604,9 +596,7 @@ async function renderListPage(){
     container.removeAttribute('aria-busy');
     return;
   }
-  for(const item of filtered){
-    container.appendChild(gridCard(item));
-  }
+  for(const item of filtered){ container.appendChild(gridCard(item)); }
 
   // Toggle compact mode for 1–3 results (prevents blown‑up cards)
   setCompactGrid(container, filtered.length);
@@ -621,9 +611,10 @@ async function renderListPage(){
 /* ---------- OG/Twitter & Canonical helpers ---------- */
 function applyOpenGraph(meta, file){
   const title = (meta.Title || file || 'Article').trim();
-  const desc = (meta.Subtitle || '').trim();
-  const img = resolveThumbPath(meta.Thumbnail) || DEFAULT_THUMB;
-  const url = location.href;
+  const desc  = (meta.Subtitle || '').trim();
+  const img   = resolveThumbPath(meta.Thumbnail) || DEFAULT_THUMB;
+  const url   = location.href;
+
   const ogT = document.getElementById('og-title');
   const ogD = document.getElementById('og-description');
   const ogI = document.getElementById('og-image');
@@ -632,6 +623,7 @@ function applyOpenGraph(meta, file){
   if (ogD && !ogD.content && desc) ogD.content = desc;
   if (ogI && (!ogI.content || ogI.content === '')) ogI.content = img;
   if (ogU && (!ogU.content || ogU.content === '')) ogU.content = url;
+
   const twT = document.getElementById('tw-title');
   const twD = document.getElementById('tw-description');
   const twI = document.getElementById('tw-image');
@@ -661,8 +653,8 @@ function populateArticleHero(meta){
   const cat=(meta.Category||'').trim();
 
   if(titleEl) titleEl.textContent=title;
-  if(subEl) subEl.textContent = meta.Subtitle||'';
-  if(metaEl) metaEl.textContent = `${date}${date?' • ':''}${author}`;
+  if(subEl)   subEl.textContent = meta.Subtitle||'';
+  if(metaEl)  metaEl.textContent = `${date}${date?' • ':''}${author}`;
   if(catEl){ if(cat){ catEl.hidden=false; catEl.textContent=cat; } else { catEl.hidden=true; } }
 
   const img=resolveThumbPath(meta.Thumbnail);
@@ -675,9 +667,9 @@ function buildShareLinks(title){
   const x=document.querySelector('[data-share="x"]');
   const copy=document.querySelector('[data-share="copy"]');
   const fb=document.getElementById('share-feedback');
-  if(email) email.href=`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`;
+  if(email)  email.href =`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`;
   if(reddit) reddit.href=`https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`;
-  if(x) x.href =`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  if(x)      x.href     =`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
   if(copy){
     copy.addEventListener('click', async ()=>{
       try{ await navigator.clipboard.writeText(url); if(fb){ fb.textContent='Link copied!'; setTimeout(()=>fb.textContent='',1400); } }
@@ -697,7 +689,7 @@ function renderArticle(container, filename, meta, body){
   if(tags.length && bylineWrap){
     const tagDiv=document.createElement('div');
     tagDiv.className='a-tags';
-    tagDiv.innerHTML = tags.map(t=>`newsletters.html?tag=${encodeURIComponent(t)}${escapeHtml(t)}</a>`).join('');
+    tagDiv.innerHTML = tags.map(t=>`<a href="newsletters.html?tag=${encodeURIComponent(t)}">${escapeHtml(t)}</a>`).join('');
     bylineWrap.appendChild(tagDiv);
   }
 
@@ -754,6 +746,7 @@ async function initArticlePage(){
 
 /* ---------- Boot ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
+  console.log('script.js v6.3.0 loaded');
   initTheme();
   initMobile();
   markCurrentNav();
