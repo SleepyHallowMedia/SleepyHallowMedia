@@ -2,7 +2,7 @@
 Title: Image Test
 Subtitle: A Not So short subtitle explainging this article and its thoughts and reasonings
 Author: Jane Good Reporter
-Thumbnail: thumbnails/Untitled.jpg
+Thumbnail: Untitled.jpg
 Date: 2026-01-23
 Tags: Opinion
 ---
