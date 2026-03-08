@@ -1,4 +1,4 @@
-/* Sleepy Hallow Media — App (v6.1.4)
+/* Sleepy Hallow Media — App (v6.1.5)
    Warm, whimsical-but-radical UX. Dynamic topic sections. Sticky share.
    Sleek Newsletters grid with compact mode for small result sets.
    FIX: Output real <a> and <img> elements everywhere (prevents raw URLs/text),
@@ -426,7 +426,8 @@ async function renderHome(){
       li.setAttribute('role','listitem');
       const date=formatDate(item.meta.Date);
       const url = `article.html?article=${encodeURIComponent(item.file)}`;
-      li.innerHTML = `${escapeAttr(url)}${escapeHtml(item.meta.Title || item.file)}</a>
+      const title = item.meta.Title || item.file;
+      li.innerHTML = `${escapeAttr(url)}${escapeHtml(title)}</a>
       <div class="muted" style="font-size:.85rem">${escapeHtml(date)}</div>`;
       sList.appendChild(li);
     }
@@ -557,7 +558,7 @@ async function renderListPage(){
       ? list.map(([t])=>{
           const isOn=activeTags.includes(t.toLowerCase());
           const url=new URL(location.href);
-          const current=parseTagsParam(url.searchParams.get('tag')||'').map(x=>x.toLowerCase());
+          const current=(url.searchParams.get('tag')||'').split(',').map(s=>s.trim()).filter(Boolean).map(x=>x.toLowerCase());
           const next=isOn?current.filter(x=>x!==t.toLowerCase()):[...new Set([...current,t.toLowerCase()])];
           if(next.length) url.searchParams.set('tag', next.join(',')); else url.searchParams.delete('tag');
           return `${escapeAttr(url.pathname + url.search)}${escapeHtml(t)}</a>`;
