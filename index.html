@@ -1,44 +1,39 @@
 <!doctype html>
 <html lang="en" data-theme="light">
 <head>
+  <!-- Ads (load once per page) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9198552366209337" crossorigin="anonymous"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
   <title>Sleepy Hallow Media — Independent Reporting</title>
+  <meta name="description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
 
-  <!-- Canonical -->
-  <link rel="canonical" href="https://sleepyhallowmedia.github.io/SleepyHallowMedia/" />
-
-  <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" sizes="any" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="styles.css?v=5.1" />
-
-  <!-- Open Graph / Twitter -->
-  <meta name="description" content="Local reporting, culture, and opinion from the Hollow.">
+  <!-- Canonical & Open Graph -->
+  <link rel="canonical" href="https://sleepyhallowmedia.github.io/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Sleepy Hallow Media" />
   <meta property="og:title" content="Sleepy Hallow Media — Independent Reporting" />
-  <meta property="og:description" content="Local reporting, culture, and opinion from the Hollow." />
+  <meta property="og:description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
   <meta property="og:image" content="assets/social-default.jpg" />
-  <meta property="og:url" content="https://sleepyhallowmedia.github.io/SleepyHallowMedia/index.html" />
+  <meta property="og:url" content="https://sleepyhallowmedia.github.io/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Sleepy Hallow Media — Independent Reporting" />
-  <meta name="twitter:description" content="Local reporting, culture, and opinion from the Hollow." />
+  <meta name="twitter:description" content="Warm, independent reporting with a whimsical twist — local, politics, culture, opinion, and more." />
   <meta name="twitter:image" content="assets/social-default.jpg" />
 
-  <!-- Markdown + Sanitizer (must load before app script) -->
+  <!-- Icons & Fonts -->
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles & App -->
+  <link rel="stylesheet" href="styles.css?v=6.0" />
   <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-
-  <!-- App script -->
-  <script defer src="script.js?v=5.1"></script>
+  <script defer src="script.js?v=6.0"></script>
 </head>
 <body>
   <!-- Skip link -->
@@ -66,7 +61,7 @@
   <header class="site-header" role="banner">
     <div class="wrap header-row">
       <a class="brand" href="index.html">
-        <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="24" height="24" />
+        <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
         <span class="brand-name">Sleepy Hallow Media</span>
       </a>
 
@@ -89,52 +84,63 @@
     </nav>
   </header>
 
-  <!-- About -->
-  <section aria-labelledby="about-heading">
-    <div id="about-heading" class="wrap font">
-      <h2 class="h-section">About</h2>
-      <p class="body">Sleepy Hallow Media is a small</p>
+  <!-- Trending strip -->
+  <section class="trending" aria-label="Trending topics">
+    <div class="wrap trend-row">
+      <div class="trend-label">Trending</div>
+      <div id="trend-topics" class="trend-tags"></div>
     </div>
   </section>
 
-  <!-- Magazine front page -->
+  <!-- Front page -->
   <main id="main" class="wrap front" tabindex="-1">
     <h2 class="h-section">Latest Stories</h2>
 
     <!-- Lead + Right rail -->
     <section class="lead-grid" aria-label="Lead story">
-      <article id="lead-story" class="lead-card" role="article"></article>
+      <article id="lead-story" class="lead-card" role="article" aria-busy="true"></article>
 
       <div class="right-rail" role="list" id="right-rail">
         <div id="top-stories" class="top-stories"></div>
       </div>
     </section>
 
+    <!-- Latest + sidebar -->
     <section class="content-grid" aria-label="Latest and signup">
       <div>
-        <div id="latest-grid" class="cards-grid" role="list"></div>
+        <div id="latest-grid" class="cards-grid" role="list" aria-busy="true"></div>
       </div>
 
       <aside class="side-panel signup" aria-label="Newsletter signup">
-        <h3 class="Sidebar">Never miss a premium story</h3>
+        <h3 class="h-side">Never miss a premium story</h3>
         <p>Get the latest in your inbox. No spam.</p>
         <a class="btn" href="newsletters.html">Subscribe</a>
       </aside>
     </section>
 
-    <section class="trending" aria-label="Trending topics">
-      <div class="wrap trend-row">
-        <div class="trend-label">Trending</div>
-        <div id="trend-topics" class="trend-tags"></div>
-      </div>
+    <!-- About block (appears after latest) -->
+    <section id="about-block" class="about-block" aria-labelledby="about-heading">
+      <h2 id="about-heading" class="h-section">About</h2>
+      <p class="about-lede">
+        Sleepy Hallow Media is a small, independent newsroom with a warm point of view —
+        we chase clarity, context, and a bit of wonder.
+      </p>
+      <p class="about-detail">
+        We publish local reporting, politics, culture, and opinion.
+        We keep pages fast, readable, and accessible. We also like a little mischief.
+      </p>
     </section>
+
+    <!-- Dynamic topic sections (rotates per visit/day) -->
+    <section id="dynamic-sections" class="dynamic-sections" aria-label="Handpicked for you"></section>
   </main>
 
+  <!-- Footer -->
   <footer class="site-footer" id="footer">
     <div class="wrap footer-grid">
       <div>
         <a class="brand" href="index.html">
-          <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="24" height="24" />
+          <img class="brand-mark" src="assets/logo.png" alt="Sleepy Hallow Media logo" width="28" height="28" />
           <span class="brand-name">Sleepy Hallow Media</span>
         </a>
         <p class="muted">Independent reporting from the Hollow.</p>
@@ -142,7 +148,7 @@
 
       <nav class="footer-links" aria-label="Footer">
         <a href="newsletters.html">Check Out Our Patreon!</a>
-        <img class="Patreon" src="assets/Patreon.png" alt="Patreon" width="32" height="16"/>
+        <img class="Patreon" src="assets/Patreon.png" alt="Support us on Patreon" width="32" height="16" />
       </nav>
 
       <div class="copy muted">© <span id="year"></span> Sleepy Hallow Media</div>
