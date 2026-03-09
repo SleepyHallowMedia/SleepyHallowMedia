@@ -228,7 +228,7 @@ a:focus-visible{ outline:var(--ring); outline-offset:2px; border-radius:6px }
 :root[data-theme="dark"] .cover-vertical{ color:#ff8800; opacity:.9 }
 .lead-card{ padding-left: min(92px, 12.5vw) }
 
-.lead-body{ position:relative; color:#fff; padding: clamp(12px, 2.8vw, 22px); z-index:1 }
+.lead-body{ position:relative; color:#000000; padding: clamp(12px, 2.8vw, 22px); z-index:1 }
 .lead-body::before{
   content:""; position:absolute; width: clamp(140px, 30vw, 340px); height: clamp(140px, 30vw, 340px);
   left:var(--spot-x, 70%); top:var(--spot-y, 30%); transform: translate(-50%,-50%); pointer-events:none; border-radius:50%;
