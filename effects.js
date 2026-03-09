@@ -1,8 +1,9 @@
-/* Sleepy Hallow Media — effects.js (v1.0)
-   Lightweight interactivity layered on top of script.js (no dependencies).
-   - Injects price/issue sticker on lead using data attributes.
-   - Spotlight hover on lead.
-   - Reveal-on-scroll for cards and right-rail items.
+/* Sleepy Hallow Media — effects.js (v1.2)
+   Adds surreal/interactive touches without altering script.js:
+   - Inject price/issue sticker on the home lead (from <html data-*>).
+   - Spotlight hover over the lead headline area.
+   - Reveal-on-scroll for cards/right-rail.
+   - Article scroll "barcode" progress.
 */
 (function(){
   'use strict';
@@ -10,64 +11,65 @@
   const doc = document;
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function onceIdle(fn){ (window.requestIdleCallback || window.requestAnimationFrame)(fn); }
+  const $$ = (sel, root = doc) => Array.from(root.querySelectorAll(sel));
+  const $ = (sel, root = doc) => root.querySelector(sel);
 
+  function idle(fn){ (window.requestIdleCallback || window.requestAnimationFrame)(fn); }
+
+  /* ---------- Lead: price/issue sticker ---------- */
   function injectPriceSticker(){
-    const host = doc.getElementById('lead-story');
+    const host = $('#lead-story');
     if(!host || host.querySelector('.price-sticker')) return;
 
-    // Read data attributes from <html> (or <body> fallback)
-    const carrier = doc.documentElement.dataset && (doc.documentElement.dataset.price || doc.documentElement.dataset.issue)
-      ? doc.documentElement
-      : (doc.body || doc.documentElement);
-
-    const price = carrier.dataset.price || '';
+    const carrier = document.documentElement;
+    const price  = carrier.dataset.price  || '';
     const season = carrier.dataset.season || '';
-    const issue = carrier.dataset.issue || '';
+    const issue  = carrier.dataset.issue  || '';
 
-    if(!price && !season && !issue) return; // nothing to show
+    if(!price && !season && !issue) return;
 
     const el = doc.createElement('div');
     el.className = 'price-sticker';
+    el.setAttribute('role', 'note');
     el.setAttribute('aria-label', 'Issue information');
-
-    // Build content similar to the magazine: season/issue line, price, barcode
     el.innerHTML = `
-      <div class="ps-line1">${season ? season : ''}${season && issue ? ' • ' : ''}${issue ? issue : ''}</div>
+      <div class="ps-line1">${[season, issue].filter(Boolean).join(' • ')}</div>
       ${price ? `<div class="ps-price">${price}</div>` : ''}
       <div class="ps-barcode" aria-hidden="true"></div>
     `;
     host.appendChild(el);
   }
 
+  /* ---------- Lead: spotlight hover ---------- */
   function spotlightLead(){
-    const lead = doc.querySelector('.lead-card .lead-body');
-    if(!lead || prefersReduced) return;
+    if(prefersReduced) return;
+    const leadBody = $('.lead-card .lead-body');
+    if(!leadBody) return;
 
     let raf = 0, x = 0, y = 0;
     const apply = () => {
       raf = 0;
-      lead.style.setProperty('--spot-x', x + 'px');
-      lead.style.setProperty('--spot-y', y + 'px');
+      leadBody.style.setProperty('--spot-x', x + 'px');
+      leadBody.style.setProperty('--spot-y', y + 'px');
     };
     const onMove = (e) => {
-      const r = lead.getBoundingClientRect();
+      const r = leadBody.getBoundingClientRect();
       x = Math.max(0, Math.min(e.clientX - r.left, r.width));
       y = Math.max(0, Math.min(e.clientY - r.top, r.height));
       if(!raf) raf = requestAnimationFrame(apply);
     };
-    lead.addEventListener('mousemove', onMove, {passive:true});
-    lead.addEventListener('mouseleave', () => {
-      lead.style.removeProperty('--spot-x');
-      lead.style.removeProperty('--spot-y');
+    leadBody.addEventListener('mousemove', onMove, {passive:true});
+    leadBody.addEventListener('mouseleave', () => {
+      leadBody.style.removeProperty('--spot-x');
+      leadBody.style.removeProperty('--spot-y');
     }, {passive:true});
   }
 
+  /* ---------- Reveal-on-scroll ---------- */
   function revealOnScroll(){
-    const targets = [...doc.querySelectorAll('.cards-grid .card, .top-card')];
+    const targets = $$('.cards-grid .card, .top-card');
     if(!targets.length) return;
     targets.forEach(t => t.classList.add('reveal'));
-
     const io = new IntersectionObserver((entries) => {
       for(const it of entries){
         if(it.isIntersecting){
@@ -75,29 +77,63 @@
           io.unobserve(it.target);
         }
       }
-    }, {rootMargin: '80px 0px'});
+    }, {rootMargin: '100px 0px'});
     targets.forEach(t => io.observe(t));
   }
 
-  // Wait for script.js to populate home content, then enhance.
-  function whenLeadReady(){
-    const host = doc.getElementById('lead-story');
-    if(!host) return;
-    if(host.children.length){
+  /* ---------- Article: scroll barcode progress ---------- */
+  function articleBarcode(){
+    const wrap = $('.article-wrap');
+    if(!wrap) return;
+
+    // mount if not present
+    let bar = $('.scroll-barcode');
+    if(!bar){
+      bar = doc.createElement('div');
+      bar.className = 'scroll-barcode';
+      wrap.prepend(bar);
+    }
+
+    const update = () => {
+      const el = $('.article-body');
+      if(!el) return;
+      const r = el.getBoundingClientRect();
+      const total = el.scrollHeight - window.innerHeight;
+      const sc = Math.min(Math.max(window.scrollY - (el.offsetTop - 64), 0), total);
+      const pct = total > 0 ? (sc/total)*100 : 0;
+      bar.style.setProperty('--progress', pct.toFixed(2) + '%');
+    };
+    update();
+    window.addEventListener('scroll', update, {passive:true});
+    window.addEventListener('resize', update, {passive:true});
+  }
+
+  /* ---------- bootstrap after content exists ---------- */
+  function enhanceHome(){
+    const lead = $('#lead-story');
+    if(!lead) return;
+    if(lead.children.length){
       injectPriceSticker(); spotlightLead(); revealOnScroll();
       return;
     }
-    // If not yet populated, observe briefly
+    // wait for script.js to populate
     const mo = new MutationObserver(() => {
-      if(host.children.length){
+      if(lead.children.length){
         mo.disconnect();
         injectPriceSticker(); spotlightLead(); revealOnScroll();
       }
     });
-    mo.observe(host, {childList:true, subtree:false});
-    // safety timeout
-    setTimeout(() => { try{ mo.disconnect(); }catch{} }, 3000);
+    mo.observe(lead, {childList:true, subtree:false});
+    setTimeout(()=>{ try{ mo.disconnect(); }catch{} }, 3500);
   }
 
-  doc.addEventListener('DOMContentLoaded', () => onceIdle(whenLeadReady));
+  function enhanceArticle(){
+    // if article page, mount barcode after DOM ready
+    if($('.article-wrap')) articleBarcode();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    idle(enhanceHome);
+    idle(enhanceArticle);
+  });
 })();
